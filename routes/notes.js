@@ -4,32 +4,55 @@ const express = require('express');
 
 const router = express.Router();
 
+const Note = require('../models/note');
+
 /* ========== GET/READ ALL ITEM ========== */
 router.get('/', (req, res, next) => {
-  
-  console.log('Get All Notes');
-  res.json([
-    { id: 1, title: 'Temp 1' },
-    { id: 2, title: 'Temp 2' },
-    { id: 3, title: 'Temp 3' }
-  ]);
+    let filter = {};
+    let {searchTerm} = req.query;
+    if (searchTerm) {
+      filter.title = { $regex: searchTerm };
+    }
+    Note.find(filter).sort({ _id: 'asc' })    
+    .then(results => {
+      res.json({results});
+    })
+    .catch(err => {
+      next(err);
+    });
+
+  // console.log('Get All Notes');
+  // res.json([
+  //   { id: 1, title: 'Temp 1' },
+  //   { id: 2, title: 'Temp 2' },
+  //   { id: 3, title: 'Temp 3' }
+  // ]);
 
 });
 
 /* ========== GET/READ A SINGLE ITEM ========== */
 router.get('/:id', (req, res, next) => {
-
-  console.log('Get a Note');
-  res.json({ id: 1, title: 'Temp 1' });
+  const searchId = req.params.id  
+  Note.findById(searchId)
+    .then(note => {
+      res.json(note);
+    })
+    .catch(err => {
+      next(err);
+  });
 
 });
 
 /* ========== POST/CREATE AN ITEM ========== */
 router.post('/', (req, res, next) => {
 
-  console.log('Create a Note');
-  res.location('path/to/new/document').status(201).json({ id: 2, title: 'Temp 2' });
+  const {title, content} = req.body;
 
+  Note.create({
+    title,
+    content,})
+  .then(note => res.location(`${req.originalUrl}/${note.id}`).status(201).json(note))
+  .catch(err => next(err))
 });
 
 /* ========== PUT/UPDATE A SINGLE ITEM ========== */
