@@ -2,8 +2,9 @@
 
 const express = require('express');
 const morgan = require('morgan');
+const mongoose = requir('mongoose');
 
-const { PORT } = require('./config');
+const { PORT, MONGODB_URI } = require('./config');
 
 const notesRouter = require('./routes/notes');
 

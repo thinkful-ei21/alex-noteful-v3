@@ -6,7 +6,7 @@ const router = express.Router();
 
 /* ========== GET/READ ALL ITEM ========== */
 router.get('/', (req, res, next) => {
-
+  
   console.log('Get All Notes');
   res.json([
     { id: 1, title: 'Temp 1' },
